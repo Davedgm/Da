@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dave's Summer Plan</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #74ebd5, #acb6e5); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+  h1 { color: #fff; margin-top: 20px; }
+  .todo-box { background: #fff; padding: 20px; margin: 20px 0; width: 90%; max-width: 400px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+  .todo-box h2 { color: #2c3e50; margin-bottom: 10px; }
+  ul { list-style: none; padding: 0; }
+  li { background: #ecf0f1; margin: 10px 0; padding: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+  li.done { text-decoration: line-through; background: #d0e6d0; color: #555; }
+  button { padding: 8px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+  button:hover { background: #219150; }
+  .btn-container { display: flex; justify-content: center; flex-wrap: wrap; }
+  img { width: 100%; max-width: 380px; border-radius: 10px; margin-top: 15px; }
+</style>
+</head>
+<body>
+
+<h1>Dave's Summer Plan</h1>
+<div class="todo-box">
+  <h2 id="day-name">Today's Plan</h2>
+  <img id="day-image" src="" alt="Day Image">
+  <ul id="task-list"></ul>
+  <div class="btn-container">
+    <button onclick="addTask()">Add Task</button>
+    <button onclick="clearAll()">Clear All</button>
+  </div>
+</div>
+
+<script>
+const dayImages = {
+  "Sunday": "https://via.placeholder.com/400x200.png?text=Sunday+Goals",
+  "Monday": "https://via.placeholder.com/400x200.png?text=Monday+Motivation",
+  "Tuesday": "https://via.placeholder.com/400x200.png?text=Tuesday+Challenge",
+  "Wednesday": "https://via.placeholder.com/400x200.png?text=Midweek+Focus",
+  "Thursday": "https://via.placeholder.com/400x200.png?text=Thursday+Power",
+  "Friday": "https://via.placeholder.com/400x200.png?text=Friday+Finish+Strong",
+  "Saturday": "https://via.placeholder.com/400x200.png?text=Saturday+Review"
+};
+
+function loadTasks() {
+  const taskList = document.getElementById("task-list");
+  taskList.innerHTML = "";
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  tasks.forEach((task, index) => {
+    const li = document.createElement("li");
+    li.textContent = task.text;
+    if (task.done) li.classList.add("done");
+    li.onclick = () => toggleDone(li, index);
+    taskList.appendChild(li);
+  });
+}
+
+function toggleDone(element, index) {
+  element.classList.toggle("done");
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  tasks[index].done = element.classList.contains("done");
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function addTask() {
+  const newTask = prompt("Enter your new task:");
+  if (newTask) {
+    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.push({ text: newTask, done: false });
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    loadTasks();
+  }
+}
+
+function clearAll() {
+  if (confirm("Are you sure you want to clear all tasks?")) {
+    localStorage.removeItem("tasks");
+    loadTasks();
+  }
+}
+
+function showDayDetails() {
+  const today = new Date();
+  const options = { weekday: 'long' };
+  const dayName = today.toLocaleDateString('en-US', options);
+  document.getElementById("day-name").innerText = `${dayName}'s Plan`;
+  document.getElementById("day-image").src = dayImages[dayName] || "";
+}
+
+showDayDetails();
+loadTasks();
+</script>
+
+</body>
+</html>
